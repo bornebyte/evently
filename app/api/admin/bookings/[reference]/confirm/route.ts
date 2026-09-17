@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin-session";
 import { sendBookingConfirmationEmail } from "@/lib/mailer";
-
-export const runtime = "nodejs";
 
 export async function POST(_request: Request, { params }: { params: Promise<{ reference: string }> }) {
   const admin = await requireAdmin();
@@ -15,6 +14,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ re
   if (booking.status === "CONFIRMED" && booking.emailSentAt) return NextResponse.json({ ok: true, reference, emailSent: true });
 
   const updated = booking.status === "CONFIRMED" ? booking : await prisma.booking.update({ where: { id: booking.id }, data: { status: "CONFIRMED", verifiedAt: new Date() }, include: { event: true, items: { include: { ticketType: true } } } });
+  revalidateTag("public-events", "max");
   try {
     const item = updated.items[0];
     if (!item) return NextResponse.json({ error: "This booking has no ticket items." }, { status: 422 });

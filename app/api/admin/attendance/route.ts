@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin-session";
 
-export const runtime = "nodejs";
-
 export async function GET() {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Admin authentication required." }, { status: 401 });
-  const scans = await prisma.attendance.findMany({ orderBy: { scannedAt: "desc" }, take: 100, include: { booking: { include: { event: { select: { title: true } }, items: { include: { ticketType: { select: { name: true } } } } } } } });
-  return NextResponse.json({ scans: scans.map((scan) => ({ reference: scan.booking.reference, attendeeName: scan.booking.attendeeName, email: scan.booking.attendeeEmail, event: scan.booking.event.title, ticket: scan.booking.items[0]?.ticketType.name ?? "Ticket", scannedAt: scan.scannedAt })) });
+  const [scans, confirmedBookings] = await Promise.all([
+    prisma.attendance.findMany({ orderBy: { scannedAt: "desc" }, take: 100, include: { booking: { include: { event: { select: { title: true } }, items: { include: { ticketType: { select: { name: true } } } } } } } }),
+    prisma.booking.count({ where: { status: "CONFIRMED" } }),
+  ]);
+  return NextResponse.json({ confirmedBookings, scans: scans.map((scan) => ({ reference: scan.booking.reference, attendeeName: scan.booking.attendeeName, email: scan.booking.attendeeEmail, event: scan.booking.event.title, ticket: scan.booking.items[0]?.ticketType.name ?? "Ticket", scannedAt: scan.scannedAt })) });
 }
 
 export async function POST(request: Request) {

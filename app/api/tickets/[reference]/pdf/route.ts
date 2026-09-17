@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { makePdf } from "@/lib/mailer";
 
-export const runtime = "nodejs";
-
 export async function GET(request: Request, { params }: { params: Promise<{ reference: string }> }) {
   const { reference } = await params;
   const kind = new URL(request.url).searchParams.get("kind") === "receipt" ? "receipt" : "ticket";

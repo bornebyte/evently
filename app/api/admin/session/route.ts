@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-session";
 
-export const runtime = "nodejs";
-
 export async function GET() {
   try {
     const session = await getAdminSession();

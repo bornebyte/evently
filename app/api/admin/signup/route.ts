@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin-session";
 
-export const runtime = "nodejs";
-
 export async function POST(request: Request) {
   try {
     const currentAdmin = await requireAdmin();

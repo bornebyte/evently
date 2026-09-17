@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin-session";
-
-export const runtime = "nodejs";
 
 export async function POST(_request: Request, { params }: { params: Promise<{ reference: string }> }) {
   const admin = await requireAdmin();
@@ -15,5 +14,6 @@ export async function POST(_request: Request, { params }: { params: Promise<{ re
     await transaction.booking.update({ where: { id: booking.id }, data: { status: "CANCELLED" } });
     for (const item of booking.items) await transaction.ticketType.update({ where: { id: item.ticketTypeId }, data: { availableQuantity: { increment: item.quantity } } });
   });
+  revalidateTag("public-events", "max");
   return NextResponse.json({ ok: true, reference, status: "CANCELLED" });
 }

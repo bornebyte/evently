@@ -3,13 +3,12 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { ArrowLeft, ArrowUpRight, LockKeyhole, Mail, ShieldCheck } from "@/components/icons";
-import { DEMO_ADMIN } from "@/lib/admin-auth";
 import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState<string>(DEMO_ADMIN.email);
-  const [password, setPassword] = useState<string>(DEMO_ADMIN.password);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {

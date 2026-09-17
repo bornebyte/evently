@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
-
-export const runtime = "nodejs";
+import { revalidateTag } from "next/cache";
 
 export async function POST(request: Request) {
   try {
@@ -22,7 +22,19 @@ export async function POST(request: Request) {
       if (reserved.count !== 1) throw new Error("TICKETS_UNAVAILABLE");
       return transaction.booking.create({ data: { reference, eventId: event.id, attendeeName: body.fullName!.trim(), attendeeEmail: body.email!.trim().toLowerCase(), phone: body.phone!.trim(), paymentReference: body.paymentReference!.trim(), total, currency: "INR", status: "PENDING", items: { create: { ticketTypeId: ticket.id, quantity, unitPrice: ticket.price } } } });
     });
-    return NextResponse.json({ ok: true, booking: { reference: booking.reference, status: booking.status, total: Number(booking.total) } }, { status: 201 });
+    revalidateTag("public-events", "max");
+    const cookieStore = await cookies();
+    let references: string[] = [];
+    try {
+      const parsed = cookieStore.get("evently_booking_references")?.value;
+      const values = parsed ? JSON.parse(parsed) : [];
+      if (Array.isArray(values)) references = values.filter((value): value is string => typeof value === "string");
+    } catch {
+      references = [];
+    }
+    const response = NextResponse.json({ ok: true, booking: { reference: booking.reference, status: booking.status, total: Number(booking.total) } }, { status: 201 });
+    response.cookies.set("evently_booking_references", JSON.stringify([booking.reference, ...references.filter((value) => value !== booking.reference)].slice(0, 25)), { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 60 * 60 * 24 * 365 });
+    return response;
   } catch {
     return NextResponse.json({ error: "We could not submit this booking. Please try again." }, { status: 500 });
   }
