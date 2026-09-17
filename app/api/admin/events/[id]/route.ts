@@ -132,3 +132,32 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Unable to update the event right now." }, { status: 500 });
   }
 }
+
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Admin authentication required." }, { status: 401 });
+
+  const { id } = await params;
+  try {
+    const event = await prisma.event.findUnique({
+      where: { id },
+      select: { id: true, slug: true, title: true, _count: { select: { bookings: true } } },
+    });
+    if (!event) return NextResponse.json({ error: "Event not found." }, { status: 404 });
+    if (event._count.bookings > 0) return NextResponse.json({ error: "Events with bookings cannot be deleted. Archive the event instead." }, { status: 409 });
+
+    await prisma.event.delete({ where: { id: event.id } });
+
+    revalidateTag("public-events", { expire: 0 });
+    revalidatePath("/");
+    revalidatePath("/events");
+    revalidatePath(`/events/${event.slug}`);
+    return NextResponse.json({ ok: true, deletedId: event.id });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2003") {
+      return NextResponse.json({ error: "This event cannot be deleted because it has related bookings. Archive the event instead." }, { status: 409 });
+    }
+    console.error("[admin/events] Failed to delete event:", error);
+    return NextResponse.json({ error: "Unable to delete the event right now." }, { status: 500 });
+  }
+}

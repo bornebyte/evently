@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { AdminActionLink, AdminShell } from "@/components/admin-shell";
 import { EmptyState, DataLoading } from "@/components/empty-state";
-import { CalendarDays, ExternalLink, Pencil, Plus, Search, Ticket } from "@/components/icons";
+import { CalendarDays, ExternalLink, Pencil, Plus, Search, Ticket, Trash2 } from "@/components/icons";
 
 type EventStatus = "DRAFT" | "PUBLISHED" | "SOLD_OUT" | "ARCHIVED";
 type AdminEvent = {
@@ -45,6 +45,8 @@ export default function EventsPage() {
   const [filter, setFilter] = useState<"ALL" | EventStatus>("ALL");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [notice, setNotice] = useState<{ kind: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -62,6 +64,28 @@ export default function EventsPage() {
     });
     return () => { cancelled = true; };
   }, []);
+
+  async function deleteEvent(event: AdminEvent) {
+    if (event.bookings > 0) {
+      setNotice({ kind: "error", text: `“${event.title}” has ${event.bookings} ${event.bookings === 1 ? "booking" : "bookings"}. Archive it instead of deleting it.` });
+      return;
+    }
+    if (!window.confirm(`Delete “${event.title}”? This cannot be undone.`)) return;
+
+    setDeletingId(event.id);
+    setNotice(null);
+    try {
+      const response = await fetch(`/api/admin/events/${event.id}`, { method: "DELETE" });
+      const result = await response.json() as { error?: string; deletedId?: string };
+      if (!response.ok || result.deletedId !== event.id) throw new Error(result.error ?? "Unable to delete the event.");
+      setEvents((current) => current.filter((item) => item.id !== event.id));
+      setNotice({ kind: "success", text: `“${event.title}” was deleted.` });
+    } catch (reason) {
+      setNotice({ kind: "error", text: reason instanceof Error ? reason.message : "Unable to delete the event." });
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   const visibleEvents = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -89,10 +113,11 @@ export default function EventsPage() {
           <select className="rounded-lg border border-[#e1e5df] bg-[#fafbf9] px-3 py-2.5 text-[11px] font-semibold outline-none focus:border-[#f16d55]" onChange={(event) => setFilter(event.target.value as "ALL" | EventStatus)} value={filter}><option value="ALL">All statuses</option>{eventStatusOptions.map((status) => <option key={status.value} value={status.value}>{status.label}</option>)}</select>
         </div>
       </div>
+      {notice && <p className={`border-b px-5 py-3 text-[11px] font-semibold sm:px-6 ${notice.kind === "error" ? "border-[#f1d1ca] bg-[#fff7f5] text-[#bb503e]" : "border-[#d5e3d0] bg-[#f7fbf5] text-[#5f7659]"}`} role="status">{notice.text}</p>}
       {error ? <div className="p-6"><EmptyState title="The event library needs a moment." description={error} /></div> : loading ? <div className="p-6"><DataLoading label="Reading your events" /></div> : visibleEvents.length === 0 ? <EmptyState title={events.length === 0 ? "Your catalog is ready for its first event." : "No events match this view."} description={events.length === 0 ? "Create an event and its public page will start here." : "Try another status or search term."} action={events.length === 0 ? <AdminActionLink href="/admin/events/new">Create your first event</AdminActionLink> : undefined} /> : <div className="divide-y divide-[#eef0ec]">{visibleEvents.map((event) => {
         const capacity = event.ticketTypes.reduce((sum, ticket) => sum + ticket.totalQuantity, 0);
         const available = event.ticketTypes.reduce((sum, ticket) => sum + ticket.availableQuantity, 0);
-        return <article className="p-5 sm:p-6" key={event.id}><div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center"><div className="flex min-w-0 items-start gap-4"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#f7ded7] text-lg font-semibold text-[#bf5542]">{event.title.slice(0, 1).toUpperCase()}</span><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${statusClasses(event.status)}`}>{statusLabel(event.status)}</span>{event.featured && <span className="rounded-full bg-[#eee5c8] px-2.5 py-1 text-[10px] font-semibold text-[#947b39]">Featured</span>}<span className="text-[10px] text-[#a0a8a1]">{event.category}</span></div><h3 className="mt-2 truncate text-[17px] font-semibold tracking-[-0.035em]">{event.title}</h3><p className="mt-1 truncate text-[11px] text-[#89938b]">{event.venueName} · {event.city}</p></div></div><div className="flex shrink-0 flex-wrap items-center gap-2"><Link className="flex items-center gap-2 rounded-xl bg-[#242725] px-4 py-3 text-[11px] font-semibold text-white hover:bg-[#f16d55] hover:text-[#242725]" href={`/admin/events/${event.id}/edit`}><Pencil size={13} /> Edit event</Link>{event.status === "PUBLISHED" && <Link className="flex items-center gap-2 rounded-xl border border-[#e1e5df] px-4 py-3 text-[11px] font-semibold text-[#68736b] hover:border-[#f16d55]" href={`/events/${event.slug}`} target="_blank"><ExternalLink size={13} /> View page</Link>}</div></div><div className="mt-5 grid gap-3 border-t border-[#eef0ec] pt-4 text-[11px] text-[#7b847d] sm:grid-cols-3"><div className="flex items-center gap-2"><CalendarDays className="text-[#9aa39b]" size={14} /><span>{formatEventDate(event.startAt)} · {formatEventDate(event.endAt)}</span></div><div className="flex items-center gap-2"><Ticket className="text-[#9aa39b]" size={14} /><span>{available} available of {capacity} tickets</span></div><div className="flex items-center gap-2"><span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#e7f0e3] px-1.5 text-[9px] font-bold text-[#5f7659]">{event.bookings}</span><span>{event.bookings === 1 ? "booking" : "bookings"}</span></div></div></article>;
+        return <article className="p-5 sm:p-6" key={event.id}><div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center"><div className="flex min-w-0 items-start gap-4"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#f7ded7] text-lg font-semibold text-[#bf5542]">{event.title.slice(0, 1).toUpperCase()}</span><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${statusClasses(event.status)}`}>{statusLabel(event.status)}</span>{event.featured && <span className="rounded-full bg-[#eee5c8] px-2.5 py-1 text-[10px] font-semibold text-[#947b39]">Featured</span>}<span className="text-[10px] text-[#a0a8a1]">{event.category}</span></div><h3 className="mt-2 truncate text-[17px] font-semibold tracking-[-0.035em]">{event.title}</h3><p className="mt-1 truncate text-[11px] text-[#89938b]">{event.venueName} · {event.city}</p></div></div><div className="flex shrink-0 flex-wrap items-center gap-2"><Link className="flex items-center gap-2 rounded-xl bg-[#242725] px-4 py-3 text-[11px] font-semibold text-white hover:bg-[#f16d55] hover:text-[#242725]" href={`/admin/events/${event.id}/edit`}><Pencil size={13} /> Edit event</Link>{event.status === "PUBLISHED" && <Link className="flex items-center gap-2 rounded-xl border border-[#e1e5df] px-4 py-3 text-[11px] font-semibold text-[#68736b] hover:border-[#f16d55]" href={`/events/${event.slug}`} target="_blank"><ExternalLink size={13} /> View page</Link>}<button aria-label={`Delete ${event.title}`} className="flex items-center gap-2 rounded-xl border border-[#f1c9c0] px-4 py-3 text-[11px] font-semibold text-[#bb503e] hover:border-[#d95742] hover:bg-[#fff7f5] disabled:cursor-wait disabled:opacity-50" disabled={deletingId === event.id} onClick={() => void deleteEvent(event)} title={event.bookings > 0 ? "Events with bookings cannot be deleted" : undefined} type="button"><Trash2 size={13} />{deletingId === event.id ? "Deleting…" : "Delete event"}</button></div></div><div className="mt-5 grid gap-3 border-t border-[#eef0ec] pt-4 text-[11px] text-[#7b847d] sm:grid-cols-3"><div className="flex items-center gap-2"><CalendarDays className="text-[#9aa39b]" size={14} /><span>{formatEventDate(event.startAt)} · {formatEventDate(event.endAt)}</span></div><div className="flex items-center gap-2"><Ticket className="text-[#9aa39b]" size={14} /><span>{available} available of {capacity} tickets</span></div><div className="flex items-center gap-2"><span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#e7f0e3] px-1.5 text-[9px] font-bold text-[#5f7659]">{event.bookings}</span><span>{event.bookings === 1 ? "booking" : "bookings"}</span></div></div></article>;
       })}</div>}
     </section>
   </AdminShell>;
