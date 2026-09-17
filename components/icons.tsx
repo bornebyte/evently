@@ -37,6 +37,7 @@ export function TrendingUp(props: IconProps) { return <Icon {...props}><path d="
 export function CheckCircle2(props: IconProps) { return <Icon {...props}><circle cx="12" cy="12" r="9" /><path d="m8 12 2.5 2.5L16 9" /></Icon>; }
 export function Share2(props: IconProps) { return <Icon {...props}><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" /></Icon>; }
 export function ExternalLink(props: IconProps) { return <Icon {...props}><path d="M14 4h6v6M20 4l-9 9" /><path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5" /></Icon>; }
+export function Pencil(props: IconProps) { return <Icon {...props}><path d="m14 6 4 4" /><path d="M4 20h4l10-10a2.8 2.8 0 0 0-4-4L4 16v4Z" /></Icon>; }
 export function QrCode(props: IconProps) { return <Icon {...props}><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2M20 14h.01M14 18h2M18 18h2M18 20h2" /></Icon>; }
 export function ShieldCheck(props: IconProps) { return <Icon {...props}><path d="M12 3 20 6v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-3Z" /><path d="m8.5 12 2.3 2.3 4.8-5" /></Icon>; }
 export function Globe2(props: IconProps) { return <Icon {...props}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></Icon>; }

@@ -13,6 +13,9 @@ export async function POST(request: Request) {
     if (!event || event.status !== "PUBLISHED") return NextResponse.json({ error: "This event is not available for booking." }, { status: 404 });
     const ticket = event.ticketTypes.find((item) => item.name === body.ticketName && item.status === "ACTIVE");
     if (!ticket) return NextResponse.json({ error: "That ticket type is no longer available." }, { status: 409 });
+    const now = new Date();
+    if ((ticket.salesStart && now < ticket.salesStart) || (ticket.salesEnd && now > ticket.salesEnd)) return NextResponse.json({ error: "Bookings for that ticket are outside its sales window." }, { status: 409 });
+    if (quantity < ticket.minPerOrder || quantity > ticket.maxPerOrder) return NextResponse.json({ error: `Choose between ${ticket.minPerOrder} and ${ticket.maxPerOrder} tickets for this ticket type.` }, { status: 409 });
     if (quantity > ticket.availableQuantity || quantity > ticket.maxPerOrder) return NextResponse.json({ error: "There are not enough tickets available for that quantity." }, { status: 409 });
 
     const total = Number(ticket.price) * quantity;
