@@ -94,6 +94,7 @@ model Event {
   ticketTypes   TicketType[]
   bookings      Booking[]
   paymentQrs    PaymentQr[]
+  paymentQrLinks EventPaymentQr[]
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
@@ -166,17 +167,32 @@ model BookingItem {
 }
 
 model PaymentQr {
-  id        String   @id @default(cuid())
-  eventId   String
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  label     String
-  payload   String
-  imageUrl  String?
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  eventId    String?
+  event      Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventLinks EventPaymentQr[]
+  label      String
+  payload    String
+  imageUrl   String?
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@index([eventId, isActive])
+}
+
+model EventPaymentQr {
+  eventId     String
+  paymentQrId String
+  event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  paymentQr   PaymentQr @relation(fields: [paymentQrId], references: [id], onDelete: Cascade)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@id([eventId, paymentQrId])
+  @@index([eventId, isActive])
+  @@index([paymentQrId])
 }
 
 model WorkspaceSetting {

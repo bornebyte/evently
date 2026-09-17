@@ -4,8 +4,8 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const event = await prisma.event.findUnique({ where: { slug }, select: { paymentQrs: { where: { isActive: true }, orderBy: { updatedAt: "desc" }, take: 1, select: { label: true, payload: true, imageUrl: true } } } });
-  const paymentQr = event?.paymentQrs[0];
+  const event = await prisma.event.findUnique({ where: { slug }, select: { paymentQrLinks: { where: { isActive: true }, orderBy: { updatedAt: "desc" }, take: 1, select: { paymentQr: { select: { label: true, payload: true, imageUrl: true } } } }, paymentQrs: { where: { isActive: true }, orderBy: { updatedAt: "desc" }, take: 1, select: { label: true, payload: true, imageUrl: true } } } });
+  const paymentQr = event?.paymentQrLinks[0]?.paymentQr ?? event?.paymentQrs[0];
   if (!paymentQr) return NextResponse.json({ qr: null }, { headers: { "Cache-Control": "no-store" } });
 
   const imageUrl = paymentQr.imageUrl ?? await QRCode.toDataURL(paymentQr.payload, { errorCorrectionLevel: "M", margin: 2, width: 512 });
