@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, Search, Ticket, X } from "@/components/icons";
+import { Mail, Menu, Search, Ticket, X } from "@/components/icons";
 
 export function SiteHeader({ dark = false }: { dark?: boolean }) {
   const [open, setOpen] = useState(false);
@@ -23,6 +23,7 @@ export function SiteHeader({ dark = false }: { dark?: boolean }) {
           <Link className={`${muted} transition-colors`} href="/events">Discover</Link>
           <Link className={`${muted} transition-colors`} href="/#categories">Categories</Link>
           <Link className={`${muted} transition-colors`} href="/#how-it-works">How it works</Link>
+          <Link className={`${muted} transition-colors`} href="/contact">Contact</Link>
         </nav>
 
         <div className="hidden items-center gap-3 sm:flex">
@@ -46,6 +47,7 @@ export function SiteHeader({ dark = false }: { dark?: boolean }) {
           <nav className="flex flex-col gap-1 text-sm">
             <Link className="rounded-xl px-4 py-3 hover:bg-black/5" href="/events" onClick={() => setOpen(false)}>Discover events</Link>
             <Link className="rounded-xl px-4 py-3 hover:bg-black/5" href="/#categories" onClick={() => setOpen(false)}>Categories</Link>
+            <Link className="flex items-center gap-2 rounded-xl px-4 py-3 hover:bg-black/5" href="/contact" onClick={() => setOpen(false)}><Mail size={16} /> Contact us</Link>
             <Link className="rounded-xl px-4 py-3 hover:bg-black/5" href="/tickets" onClick={() => setOpen(false)}>My tickets</Link>
           </nav>
         </div>

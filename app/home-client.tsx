@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ArrowUpRight, CalendarDays, MapPin, Search, Sparkles, Users } from "@/components/icons";
+import { ArrowRight, ArrowUpRight, CalendarDays, Mail, MapPin, Search, Sparkles, Users } from "@/components/icons";
 import { EmptyState } from "@/components/empty-state";
 import { EventCard } from "@/components/event-card";
 import { SiteFooter } from "@/components/site-footer";
@@ -43,6 +43,7 @@ export default function HomeClient({ events, categories }: { events: PublicEvent
               <input aria-label="Search events" className="h-11 min-w-0 flex-1 bg-transparent px-3 text-[14px] text-[#242725] outline-none placeholder:text-[#9aa39b]" onChange={(event) => setSearch(event.target.value)} placeholder="Search events, places or vibes" value={search} />
               <button className="flex h-11 items-center gap-2 rounded-[13px] bg-[#242725] px-4 text-[13px] font-semibold text-white hover:bg-[#f16d55] hover:text-[#242725]" type="submit">Search <ArrowUpRight size={15} /></button>
             </form>
+            <div className="mt-5 flex flex-wrap items-center gap-3 text-[11px] text-[#68766a]"><Link className="group inline-flex items-center gap-2 rounded-full bg-white/70 px-3.5 py-2.5 font-semibold text-[#242725] shadow-[0_5px_18px_rgba(46,63,47,0.06)] transition-transform hover:-translate-y-0.5 hover:bg-white" href="/contact"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#f16d55] text-[#242725]"><Mail size={13} /></span>Need a hand? <span className="text-[#d95742]">Contact us</span><ArrowUpRight className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" size={14} /></Link><span>Questions about an event or booking? We’re here.</span></div>
             {categories.length > 0 && <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] font-medium text-[#68766a]"><span>Explore a category</span>{categories.slice(0, 3).map((item) => <button className="rounded-full border border-[#b9c9b9] bg-white/40 px-3 py-1.5 hover:border-[#f16d55]" key={item.name} onClick={() => router.push(`/events?category=${encodeURIComponent(item.name)}`)} type="button">{item.name}</button>)}</div>}
           </div>
 
