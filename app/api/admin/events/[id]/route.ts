@@ -121,7 +121,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       });
     });
 
-    revalidateTag("public-events", "max");
+    revalidateTag("public-events", { expire: 0 });
     revalidatePath("/");
     revalidatePath("/events");
     revalidatePath(`/events/${current.slug}`);

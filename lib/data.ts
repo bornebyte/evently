@@ -117,7 +117,7 @@ export async function getPublishedEvents() {
 
   const events = await prisma.event.findMany({
     where: { status: "PUBLISHED" },
-    orderBy: [{ featured: "desc" }, { startAt: "asc" }],
+    orderBy: [{ startAt: "asc" }, { featured: "desc" }],
     take: 100,
     select: publicEventSelect,
   });

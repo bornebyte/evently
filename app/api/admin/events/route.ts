@@ -95,7 +95,7 @@ export async function POST(request: Request) {
       });
     });
 
-    revalidateTag("public-events", "max");
+    revalidateTag("public-events", { expire: 0 });
     revalidatePath("/");
     revalidatePath("/events");
     return NextResponse.json({ ok: true, event }, { status: 201 });
