@@ -192,3 +192,28 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "Unable to save the payment QR right now." }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Admin authentication required." }, { status: 401 });
+
+  try {
+    const payload = await request.json() as unknown;
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) return NextResponse.json({ error: "Choose a payment QR to delete." }, { status: 400 });
+    const body = payload as PaymentQrInput;
+    if (!body.qrId?.trim()) return NextResponse.json({ error: "Choose a payment QR to delete." }, { status: 400 });
+
+    const qr = await prisma.paymentQr.findUnique({ where: { id: body.qrId.trim() }, select: { id: true } });
+    if (!qr) return NextResponse.json({ error: "Payment QR not found." }, { status: 404 });
+
+    await prisma.$transaction(async (transaction) => {
+      await transaction.eventPaymentQr.deleteMany({ where: { paymentQrId: qr.id } });
+      await transaction.paymentQr.delete({ where: { id: qr.id } });
+    });
+    revalidateTag("public-events", "max");
+    return NextResponse.json({ ok: true, deletedId: qr.id });
+  } catch (error) {
+    console.error("[admin/payment-qr] Failed to delete payment QR:", error);
+    return NextResponse.json({ error: "Unable to delete the payment QR right now." }, { status: 500 });
+  }
+}
