@@ -26,6 +26,12 @@ enum BookingStatus {
   REFUNDED
 }
 
+enum ContactMessageStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+}
+
 model Organizer {
   id          String   @id @default(cuid())
   name        String
@@ -178,4 +184,20 @@ model WorkspaceSetting {
   key       String   @unique
   value     String
   updatedAt DateTime @updatedAt
+}
+
+model ContactMessage {
+  id               String               @id @default(cuid())
+  name             String
+  email            String
+  phone            String?
+  subject          String
+  message          String
+  bookingReference String?
+  status           ContactMessageStatus  @default(NEW)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email])
 }

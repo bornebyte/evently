@@ -34,7 +34,7 @@ npm run build
 
 ## Data and integrations
 
-All public catalog, ticket, booking, and admin data is read from Prisma/Neon PostgreSQL. There is no in-code event catalog or demo booking fallback. The schema covers organizers, admin users/sessions, events, ticket types, bookings, attendance, workspace settings, and payment QR settings.
+All public catalog, ticket, booking, contact, and admin data is read from Prisma/Neon PostgreSQL. There is no in-code event catalog or demo booking fallback. The schema covers organizers, admin users/sessions, events, ticket types, bookings, attendance, contact messages, workspace settings, and payment QR settings. Public contact submissions appear in the authenticated admin Contact inbox.
 
 Copy `.env.example` to `.env.local` when wiring the backend. Keep Neon connection strings, Gmail SMTP credentials, canonical app URLs, and the required initial admin values in environment variables only. Run `npm run db:generate`, `npm run db:push`, and `npm run db:seed` after configuring Neon. The seed creates only the configured initial admin account; it does not create sample events, bookings, or payment QR rows. Admins approve pending bookings; approval sends a unique link plus ticket and receipt PDFs using `GMAIL_USER` and `GMAIL_APP_PASSWORD`.
 

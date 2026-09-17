@@ -1,0 +1,21 @@
+import type { Metadata } from "next";
+import { LegalPage } from "@/components/legal-page";
+
+export const metadata: Metadata = {
+  title: "Privacy policy — evently",
+  description: "How evently collects, uses, and protects information.",
+};
+
+export default function PrivacyPage() {
+  return <LegalPage eyebrow="Privacy" title={<>Your information,<br /><span className="text-[#968aa0]">handled with care.</span></>} intro="This policy explains what evently collects when you browse events, book a ticket, contact our team, or manage an organizer workspace." updatedAt="September 17, 2026" sections={[
+    { title: "The short version", children: <p>We collect only the information needed to run event discovery, booking, payment review, ticket delivery, attendance, and support. We use it to provide those services, keep the platform safe, and communicate about activity you started.</p> },
+    { title: "Information we collect", children: <><p>Depending on how you use evently, this can include:</p><ul className="list-disc space-y-2 pl-5"><li>Account details such as an administrator’s name, email address, and role.</li><li>Booking details such as an attendee’s name, email, phone number, selected ticket, payment reference, and booking status.</li><li>Contact messages, including your name, email address, optional phone number, subject, optional booking reference, and message.</li><li>Event and organizer information entered by an authenticated event team.</li><li>Basic technical information needed to operate the website, such as browser, device, and security information.</li></ul></> },
+    { title: "How we use information", children: <ul className="list-disc space-y-2 pl-5"><li>To show published events and process bookings.</li><li>To let organizers review payment references, issue tickets, and record attendance.</li><li>To respond to contact requests and booking support questions.</li><li>To send transactional messages such as booking confirmations when the workspace has email delivery configured.</li><li>To protect the service, prevent misuse, troubleshoot errors, and improve the experience.</li></ul> },
+    { title: "Payments and ticket information", children: <p>evently does not ask for payment card numbers, UPI PINs, passwords, or banking login details. An attendee may submit a payment reference or UTR so an organizer can verify the transfer. That reference, booking information, and ticket status are stored with the booking record. Please never include confidential payment credentials in a contact message.</p> },
+    { title: "When information is shared", children: <p>Booking information is shared with the organizer responsible for the selected event so they can verify payment, communicate with the attendee, issue entry credentials, and manage attendance. We may also use infrastructure, database, email, and hosting providers to operate evently. We do not sell personal information.</p> },
+    { title: "Retention and security", children: <p>We keep information for as long as it is needed to operate the relevant event, resolve support issues, maintain financial and operational records, or meet legal obligations. We use access controls and authenticated admin sessions to protect workspace data, but no internet service can guarantee absolute security.</p> },
+    { title: "Your choices", children: <p>You can contact us to ask what information we hold about you, request a correction, or ask about deletion where applicable. Some records may need to be retained for an active booking, ticket, dispute, fraud prevention, or legal requirement. Use the contact page and include enough context for us to find your record.</p> },
+    { id: "cookies", title: "Cookies and local storage", children: <p>evently uses essential browser storage for functions such as keeping an admin session and remembering ticket references on the device used for booking. These are service features, not advertising profiles. Your browser may also retain normal cached assets to make pages load faster.</p> },
+    { title: "Contact", children: <p>Questions about this policy can be sent to <a className="font-semibold text-[#d95742] hover:underline" href="mailto:hello@evently.co">hello@evently.co</a>.</p> },
+  ]} />;
+}

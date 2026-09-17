@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowUpRight, Instagram, Linkedin, Mail } from "@/components/icons";
 
@@ -18,7 +20,7 @@ export function SiteFooter() {
           </div>
           <div>
             <p className="mb-5 text-[11px] font-bold uppercase tracking-[0.16em] text-white/40">Explore</p>
-            <div className="flex flex-col items-start gap-3 text-[13px] text-white/70"><Link className="hover:text-white" href="/events">All events</Link><Link className="hover:text-white" href="/#categories">Categories</Link><Link className="hover:text-white" href="/tickets">My tickets</Link></div>
+            <div className="flex flex-col items-start gap-3 text-[13px] text-white/70"><Link className="hover:text-white" href="/events">All events</Link><Link className="hover:text-white" href="/#categories">Categories</Link><Link className="hover:text-white" href="/tickets">My tickets</Link><Link className="hover:text-white" href="/contact">Contact us</Link></div>
           </div>
           <div>
             <p className="mb-5 text-[11px] font-bold uppercase tracking-[0.16em] text-white/40">Stay in the know</p>
@@ -29,7 +31,7 @@ export function SiteFooter() {
             </form>
           </div>
         </div>
-        <div className="flex flex-col justify-between gap-3 pt-7 text-[11px] text-white/35 sm:flex-row"><span>© 2025 evently. Made for the curious.</span><div className="flex gap-5"><a className="hover:text-white/70" href="#">Privacy</a><a className="hover:text-white/70" href="#">Terms</a><a className="hover:text-white/70" href="#">Cookies</a></div></div>
+        <div className="flex flex-col justify-between gap-3 pt-7 text-[11px] text-white/35 sm:flex-row"><span>© evently. Made for the curious.</span><div className="flex gap-5"><Link className="hover:text-white/70" href="/privacy">Privacy</Link><Link className="hover:text-white/70" href="/terms">Terms</Link><Link className="hover:text-white/70" href="/privacy#cookies">Cookies</Link></div></div>
       </div>
     </footer>
   );
