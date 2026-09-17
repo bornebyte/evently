@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  SOLD_OUT
+  ARCHIVED
+}
+
+enum TicketStatus {
+  ACTIVE
+  PAUSED
+  SOLD_OUT
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  REFUNDED
+}
+
+model Organizer {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  email       String
+  phone       String?
+  website     String?
+  events      Event[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Event {
+  id            String       @id @default(cuid())
+  slug          String       @unique
+  title         String
+  shortDescription String
+  description   String
+  category      String
+  tags          String[]
+  coverImage    String
+  galleryImages String[]
+  startAt       DateTime
+  endAt         DateTime
+  timezone      String       @default("Europe/London")
+  venueName     String
+  address       String
+  city          String
+  state         String?
+  country       String       @default("United Kingdom")
+  postalCode    String?
+  latitude      Float?
+  longitude     Float?
+  status        EventStatus  @default(DRAFT)
+  featured      Boolean      @default(false)
+  organizerId   String
+  organizer     Organizer    @relation(fields: [organizerId], references: [id], onDelete: Restrict)
+  ticketTypes   TicketType[]
+  bookings      Booking[]
+  paymentQr     PaymentQr?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([status, startAt])
+  @@index([category, startAt])
+  @@index([city, startAt])
+}
+
+model TicketType {
+  id                String       @id @default(cuid())
+  eventId           String
+  event             Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name              String
+  description       String?
+  price             Decimal      @db.Decimal(10, 2)
+  currency          String       @default("GBP")
+  totalQuantity     Int
+  availableQuantity Int
+  salesStart        DateTime?
+  salesEnd          DateTime?
+  minPerOrder       Int          @default(1)
+  maxPerOrder       Int          @default(8)
+  status            TicketStatus @default(ACTIVE)
+  bookingItems      BookingItem[]
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@index([eventId, status])
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  reference   String        @unique
+  eventId     String
+  event       Event         @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  attendeeName String
+  attendeeEmail String
+  total       Decimal       @db.Decimal(10, 2)
+  currency    String        @default("GBP")
+  status      BookingStatus @default(PENDING)
+  bookedAt    DateTime      @default(now())
+  items       BookingItem[]
+
+  @@index([eventId, status])
+  @@index([attendeeEmail])
+}
+
+model BookingItem {
+  id           String     @id @default(cuid())
+  bookingId    String
+  booking      Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  ticketTypeId String
+  ticketType   TicketType @relation(fields: [ticketTypeId], references: [id], onDelete: Restrict)
+  quantity     Int
+  unitPrice    Decimal    @db.Decimal(10, 2)
+}
+
+model PaymentQr {
+  id        String   @id @default(cuid())
+  eventId   String   @unique
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  label     String
+  payload   String
+  imageUrl  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

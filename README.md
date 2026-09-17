@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# evently
 
-## Getting Started
+evently is a polished event discovery and ticketing experience built with Next.js 16, TypeScript, and Tailwind CSS. The current product pass includes the public discovery flow, ticket-ready event details, a confirmation state, a saved-ticket view, and an organizer dashboard with an event creation flow.
 
-First, run the development server:
+## Routes
+
+- `/` — editorial homepage with search, featured events, category filters, and organizer CTA
+- `/events` — searchable and filterable event directory
+- `/events/[slug]` — full event details, ticket tier picker, quantity controls, and booking confirmation
+- `/tickets` — upcoming/past ticket view with entry QR presentation
+- `/admin/dashboard` — organizer overview, revenue chart, event health, and recent bookings
+- `/admin/events/new` — event basics, schedule/location fields, ticket types, and publish confirmation
+
+## Run locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Quality checks:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run lint
+npm run build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Data and integrations
 
-## Learn More
+The UI currently reads from typed seed data in `lib/events.ts`, which makes the complete experience previewable without credentials. The production data contract is scaffolded in `prisma/schema.prisma` for Neon PostgreSQL, covering organizers, events, ticket types, bookings, booking items, and payment QR settings.
 
-To learn more about Next.js, take a look at the following resources:
+Copy `.env.example` to `.env.local` when wiring the backend. Keep Neon connection strings, Gmail SMTP credentials, and canonical app URLs in environment variables only. Transactional email delivery should be added at booking confirmation using `GMAIL_USER` and `GMAIL_APP_PASSWORD`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The event imagery is served through `next/image` from Unsplash and is allow-listed in `next.config.ts`; replace those seed URLs with uploaded media when the asset pipeline is connected.
