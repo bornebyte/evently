@@ -170,3 +170,10 @@ model PaymentQr {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model WorkspaceSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}

@@ -49,5 +49,7 @@ export function Instagram(props: IconProps) { return <Icon {...props}><rect heig
 export function Linkedin(props: IconProps) { return <Icon {...props}><path d="M7 9v8M7 6v.01M11 17v-4a4 4 0 0 1 8 0v4M11 12a3 3 0 0 1 3-3" /></Icon>; }
 export function LogOut(props: IconProps) { return <Icon {...props}><path d="M10 17l5-5-5-5M15 12H3M21 19V5a2 2 0 0 0-2-2h-6" /></Icon>; }
 export function ScanLine(props: IconProps) { return <Icon {...props}><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10M12 7v10" /></Icon>; }
+export function Copy(props: IconProps) { return <Icon {...props}><rect height="13" rx="2" width="13" x="8" y="8" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></Icon>; }
+export function Save(props: IconProps) { return <Icon {...props}><path d="M5 4h12l2 2v14H5V4Z" /><path d="M8 4v6h8V4M9 20v-6h6v6" /></Icon>; }
 export function LockKeyhole(props: IconProps) { return <Icon {...props}><rect height="9" rx="2" width="14" x="5" y="10" /><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2" /></Icon>; }
 export function UserRound(props: IconProps) { return <Icon {...props}><circle cx="12" cy="8" r="3.5" /><path d="M4.5 20a7.5 7.5 0 0 1 15 0" /></Icon>; }
