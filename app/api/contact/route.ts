@@ -14,7 +14,9 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json() as ContactInput;
+    const payload = await request.json() as unknown;
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) return NextResponse.json({ error: "Please send a valid contact form." }, { status: 400 });
+    const body = payload as ContactInput;
     const name = body.name?.trim() ?? "";
     const email = body.email?.trim().toLowerCase() ?? "";
     const phone = body.phone?.trim() || null;
@@ -31,7 +33,8 @@ export async function POST(request: Request) {
 
     const contactMessage = await prisma.contactMessage.create({ data: { name, email, phone, subject, message, bookingReference } });
     return NextResponse.json({ ok: true, submittedAt: contactMessage.createdAt.toISOString() }, { status: 201, headers: { "Cache-Control": "no-store" } });
-  } catch {
+  } catch (error) {
+    console.error("[contact] Failed to save contact message:", error);
     return NextResponse.json({ error: "We could not save your message right now. Please try again." }, { status: 500 });
   }
 }
