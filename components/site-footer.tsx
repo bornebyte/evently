@@ -15,7 +15,7 @@ export function SiteFooter() {
             </Link>
             <p className="mt-5 max-w-[250px] text-[13px] leading-6 text-white/55">A better way to find the things that make life feel a little bigger.</p>
             <div className="mt-6 flex gap-2">
-              {[Instagram, Linkedin, Mail].map((Icon, index) => <a aria-label={index === 0 ? "Instagram" : index === 1 ? "LinkedIn" : "Email"} className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-white/65 hover:border-[#f16d55] hover:bg-[#f16d55] hover:text-[#202321]" href={index === 2 ? "mailto:hello@evently.co" : "#"} key={index}><Icon size={15} /></a>)}
+              {[Instagram, Linkedin, Mail].map((Icon, index) => <a aria-label={index === 0 ? "Instagram" : index === 1 ? "LinkedIn" : "Email"} className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-white/65 hover:border-[#f16d55] hover:bg-[#f16d55] hover:text-[#202321]" href={index === 2 ? "mailto:shahshubham1888@gmail.com" : "#"} key={index}><Icon size={15} /></a>)}
             </div>
           </div>
           <div>

@@ -17,6 +17,6 @@ export default function TermsPage() {
     { title: "Content and acceptable use", children: <p>You may not use evently to upload unlawful, deceptive, abusive, infringing, malicious, or harmful content; impersonate another person; interfere with the service; harvest personal information; or attempt to access another workspace. You retain responsibility for the content you submit and must have the rights needed to use it.</p> },
     { title: "Availability and responsibility", children: <p>We work to keep evently useful and available, but the service may occasionally change, pause, or experience errors. Evently is a platform for connecting people with event information and organizers; it does not control the quality, safety, legality, or outcome of an event. To the extent permitted by law, use the service at your own judgment and risk.</p> },
     { title: "Changes to these terms", children: <p>We may update these terms as the service evolves. The updated version will be posted on this page with a revised date. Continuing to use evently after an update means you accept the revised terms.</p> },
-    { title: "Contact", children: <p>Questions about these terms can be sent to <a className="font-semibold text-[#d95742] hover:underline" href="mailto:hello@evently.co">hello@evently.co</a>.</p> },
+    { title: "Contact", children: <p>Questions about these terms can be sent to <a className="font-semibold text-[#d95742] hover:underline" href="mailto:shahshubham1888@gmail.com">shahshubham1888@gmail.com</a>.</p> },
   ]} />;
 }

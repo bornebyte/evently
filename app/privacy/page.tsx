@@ -16,6 +16,6 @@ export default function PrivacyPage() {
     { title: "Retention and security", children: <p>We keep information for as long as it is needed to operate the relevant event, resolve support issues, maintain financial and operational records, or meet legal obligations. We use access controls and authenticated admin sessions to protect workspace data, but no internet service can guarantee absolute security.</p> },
     { title: "Your choices", children: <p>You can contact us to ask what information we hold about you, request a correction, or ask about deletion where applicable. Some records may need to be retained for an active booking, ticket, dispute, fraud prevention, or legal requirement. Use the contact page and include enough context for us to find your record.</p> },
     { id: "cookies", title: "Cookies and local storage", children: <p>evently uses essential browser storage for functions such as keeping an admin session and remembering ticket references on the device used for booking. These are service features, not advertising profiles. Your browser may also retain normal cached assets to make pages load faster.</p> },
-    { title: "Contact", children: <p>Questions about this policy can be sent to <a className="font-semibold text-[#d95742] hover:underline" href="mailto:hello@evently.co">hello@evently.co</a>.</p> },
+    { title: "Contact", children: <p>Questions about this policy can be sent to <a className="font-semibold text-[#d95742] hover:underline" href="mailto:shahshubham1888@gmail.com">shahshubham1888@gmail.com</a>.</p> },
   ]} />;
 }

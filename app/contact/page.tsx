@@ -30,7 +30,7 @@ export default function ContactPage() {
               <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#f16d55]">Reach the team</p>
               <h2 className="mt-3 font-display text-[34px] leading-[0.92]">A real person<br />will read it.</h2>
               <p className="mt-5 text-[12px] leading-5 text-white/55">Your message goes into the evently admin inbox, where it can be reviewed and answered by the team.</p>
-              <a className="mt-7 flex items-center gap-3 border-t border-white/10 pt-5 text-[12px] font-semibold text-white hover:text-[#f16d55]" href="mailto:hello@evently.co"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f16d55] text-[#242725]"><Mail size={15} /></span> hello@evently.co <ArrowUpRight className="ml-auto" size={14} /></a>
+              <a className="mt-7 flex items-center gap-3 border-t border-white/10 pt-5 text-[12px] font-semibold text-white hover:text-[#f16d55]" href="mailto:shahshubham1888@gmail.com"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f16d55] text-[#242725]"><Mail size={15} /></span> shahshubham1888@gmail.com <ArrowUpRight className="ml-auto" size={14} /></a>
             </section>
             <section className="rounded-[22px] border border-[#e1e5df] bg-white p-6 sm:p-7">
               <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#e15f49]">Before you write</p>
