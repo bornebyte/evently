@@ -1,54 +1,64 @@
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import nodemailer from "nodemailer";
-
-type ConfirmationPayload = {
-  reference: string;
-  attendeeName: string;
-  attendeeEmail: string;
-  eventTitle: string;
-  eventDate: string;
-  eventVenue: string;
-  ticketName: string;
-  quantity: number;
-  total: number;
-};
+import { formatDate, formatMoney, formatTime, makePdf, type BookingDocumentPayload } from "@/lib/ticket-documents";
 
 function getTransporter() {
   if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) throw new Error("Gmail SMTP credentials are not configured.");
   return nodemailer.createTransport({ service: "gmail", auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD } });
 }
 
-export async function makePdf(title: string, lines: string[]) {
-  const document = await PDFDocument.create();
-  const page = document.addPage([595, 842]);
-  const heading = await document.embedFont(StandardFonts.HelveticaBold);
-  const body = await document.embedFont(StandardFonts.Helvetica);
-  page.drawText("evently", { x: 48, y: 778, size: 24, font: heading, color: rgb(0.13, 0.14, 0.14) });
-  page.drawText(title, { x: 48, y: 700, size: 30, font: heading, color: rgb(0.13, 0.14, 0.14) });
-  let y = 650;
-  for (const line of lines) {
-    page.drawText(line, { x: 48, y, size: 13, font: body, color: rgb(0.35, 0.39, 0.36) });
-    y -= 30;
-  }
-  page.drawText("Keep this document handy for event entry.", { x: 48, y: 90, size: 11, font: body, color: rgb(0.55, 0.58, 0.55) });
-  return Buffer.from(await document.save());
+function escapeHtml(value: unknown) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
-export async function sendBookingConfirmationEmail(payload: ConfirmationPayload) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  const ticketUrl = `${appUrl}/tickets/${payload.reference}`;
+export async function sendBookingConfirmationEmail(payload: BookingDocumentPayload) {
+  const eventDate = formatDate(payload.eventStartAt, payload.eventTimezone);
+  const eventTime = `${formatTime(payload.eventStartAt, payload.eventTimezone)} - ${formatTime(payload.eventEndAt, payload.eventTimezone)}`;
+  const total = formatMoney(payload.total, payload.currency);
+  const itemLines = payload.items.map((item) => `${item.quantity} × ${item.name} · ${formatMoney(item.unitPrice * item.quantity, payload.currency)}`).join("\n");
   const [ticketPdf, receiptPdf] = await Promise.all([
-    makePdf("Event ticket", [payload.eventTitle, payload.eventDate, payload.eventVenue, `${payload.quantity} × ${payload.ticketName}`, `Booking reference: ${payload.reference}`]),
-    makePdf("Payment receipt", [`Paid for: ${payload.eventTitle}`, `Amount: INR ${payload.total.toLocaleString("en-IN")}`, `Ticket: ${payload.ticketName}`, `Booking reference: ${payload.reference}`]),
+    makePdf("ticket", payload),
+    makePdf("receipt", payload),
   ]);
   const transporter = getTransporter();
+  const attendeeName = escapeHtml(payload.attendeeName);
+  const eventTitle = escapeHtml(payload.eventTitle);
+  const ticketUrl = payload.ticketUrl;
   await transporter.sendMail({
     from: `evently <${process.env.GMAIL_USER}>`,
     to: payload.attendeeEmail,
     subject: `Your evently ticket is confirmed · ${payload.reference}`,
-    text: `Hi ${payload.attendeeName}, your payment has been verified. Open your ticket: ${ticketUrl}. Your ticket and receipt are attached as PDFs.`,
-    html: `<div style="font-family:Arial,sans-serif;color:#242725;max-width:560px"><p style="font-size:22px;font-weight:700">evently</p><p style="color:#e15f49;font-size:12px;text-transform:uppercase;letter-spacing:2px;font-weight:700">Booking confirmed</p><h1 style="font-size:34px;line-height:1">You’re going, ${payload.attendeeName}.</h1><p style="font-size:15px;line-height:1.6;color:#69746c">Your payment has been verified and your spot is confirmed for <strong>${payload.eventTitle}</strong>.</p><div style="background:#e7f0e3;border-radius:16px;padding:20px;margin:24px 0"><p style="margin:0 0 8px"><strong>${payload.eventDate}</strong></p><p style="margin:0;color:#69746c">${payload.eventVenue}</p><p style="margin:12px 0 0;font-family:monospace">${payload.reference}</p></div><a href="${ticketUrl}" style="display:inline-block;background:#242725;color:#fff;text-decoration:none;border-radius:10px;padding:14px 20px;font-weight:700">Open unique ticket link</a><p style="font-size:12px;line-height:1.5;color:#8b948d;margin-top:28px">Your ticket PDF and payment receipt are attached to this email. Please keep both for your records.</p></div>`,
-    attachments: [{ filename: `${payload.reference}-ticket.pdf`, content: ticketPdf }, { filename: `${payload.reference}-receipt.pdf`, content: receiptPdf }],
+    text: `Hi ${payload.attendeeName},
+
+Your booking is confirmed and your payment has been verified.
+
+EVENT
+${payload.eventTitle}
+${eventDate} · ${eventTime} · ${payload.eventTimezone}
+${payload.venueName}, ${payload.city}
+
+ATTENDEE
+${payload.attendeeName} · ${payload.attendeeEmail}
+
+ORDER
+${itemLines || "Ticket"}
+Total paid: ${total}
+Booking reference: ${payload.reference}
+Payment reference: ${payload.paymentReference}
+
+Open your unique ticket: ${ticketUrl}
+Your ticket and payment receipt are attached as polished PDFs. The QR code on the ticket can be scanned at entry.
+
+Thank you for choosing evently.`,
+    html: `<div style="margin:0;background:#f5f6f3;padding:32px 16px;font-family:Arial,Helvetica,sans-serif;color:#242725"><div style="max-width:580px;margin:0 auto;background:#fff;border:1px solid #e1e5df;border-radius:24px;overflow:hidden"><div style="background:#202321;padding:30px 32px;color:#fff"><p style="margin:0;color:#f16d55;font-size:13px;font-weight:700;letter-spacing:2px">evently</p><p style="margin:28px 0 8px;color:#f16d55;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase">Booking confirmed</p><h1 style="margin:0;font-size:34px;line-height:1.05">You’re going, ${attendeeName}.</h1><p style="margin:16px 0 0;color:#c9d0ca;font-size:14px;line-height:1.6">Your payment is verified and your place is secured for <strong style="color:#fff">${eventTitle}</strong>.</p></div><div style="padding:28px 32px"><div style="background:#e7f0e3;border-radius:16px;padding:20px"><p style="margin:0;color:#66825f;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase">Your event</p><p style="margin:10px 0 6px;font-size:20px;font-weight:700">${eventTitle}</p><p style="margin:0;color:#69746c;font-size:13px;line-height:1.6">${escapeHtml(eventDate)} · ${escapeHtml(eventTime)} · ${escapeHtml(payload.eventTimezone)}<br>${escapeHtml(payload.venueName)}, ${escapeHtml(payload.city)}</p></div><div style="margin:24px 0;border-bottom:1px solid #edf0eb;padding-bottom:20px"><p style="margin:0 0 12px;color:#929b94;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase">Order summary</p>${payload.items.map((item) => `<div style="display:flex;justify-content:space-between;gap:16px;margin:8px 0;font-size:13px"><span>${escapeHtml(`${item.quantity} × ${item.name}`)}</span><strong>${escapeHtml(formatMoney(item.unitPrice * item.quantity, payload.currency))}</strong></div>`).join("") || "<p style=\"margin:0;color:#69746c;font-size:13px\">Ticket</p>"}<div style="display:flex;justify-content:space-between;gap:16px;margin-top:16px;padding-top:14px;border-top:1px solid #edf0eb;font-size:15px"><strong>Total paid</strong><strong style="color:#d95742">${escapeHtml(total)}</strong></div></div><div style="display:flex;flex-wrap:wrap;gap:18px;margin-bottom:24px"><div style="min-width:180px"><p style="margin:0 0 5px;color:#929b94;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase">Attendee</p><p style="margin:0;font-size:13px;font-weight:700">${attendeeName}</p><p style="margin:4px 0 0;color:#69746c;font-size:12px">${escapeHtml(payload.attendeeEmail)}</p></div><div style="min-width:180px"><p style="margin:0 0 5px;color:#929b94;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase">Reference</p><p style="margin:0;font-family:monospace;font-size:12px">${escapeHtml(payload.reference)}</p><p style="margin:4px 0 0;color:#69746c;font-size:12px">Payment: ${escapeHtml(payload.paymentReference)}</p></div></div><a href="${escapeHtml(ticketUrl)}" style="display:inline-block;background:#242725;color:#fff;text-decoration:none;border-radius:12px;padding:15px 20px;font-size:13px;font-weight:700">Open unique ticket link</a><p style="margin:22px 0 0;color:#89938b;font-size:12px;line-height:1.6">Two polished PDF attachments are included: your entry ticket with a scannable QR code and your payment receipt. Keep them handy for the event.</p></div></div></div>`,
+    attachments: [
+      { filename: `${payload.reference}-evently-ticket.pdf`, content: ticketPdf, contentType: "application/pdf" },
+      { filename: `${payload.reference}-evently-receipt.pdf`, content: receiptPdf, contentType: "application/pdf" },
+    ],
   });
   return ticketUrl;
 }
