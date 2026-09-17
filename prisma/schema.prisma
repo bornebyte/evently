@@ -4,8 +4,6 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 enum EventStatus {
@@ -40,6 +38,28 @@ model Organizer {
   updatedAt   DateTime @updatedAt
 }
 
+model AdminUser {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  password     String
+  name         String
+  role         String         @default("ADMIN")
+  sessions     AdminSession[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model AdminSession {
+  id          String    @id @default(cuid())
+  token       String    @unique
+  adminUserId String
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  @@index([adminUserId, expiresAt])
+}
+
 model Event {
   id            String       @id @default(cuid())
   slug          String       @unique
@@ -52,12 +72,12 @@ model Event {
   galleryImages String[]
   startAt       DateTime
   endAt         DateTime
-  timezone      String       @default("Europe/London")
+  timezone      String       @default("Asia/Kolkata")
   venueName     String
   address       String
   city          String
   state         String?
-  country       String       @default("United Kingdom")
+  country       String       @default("India")
   postalCode    String?
   latitude      Float?
   longitude     Float?
@@ -83,7 +103,7 @@ model TicketType {
   name              String
   description       String?
   price             Decimal      @db.Decimal(10, 2)
-  currency          String       @default("GBP")
+  currency          String       @default("INR")
   totalQuantity     Int
   availableQuantity Int
   salesStart        DateTime?
@@ -106,13 +126,27 @@ model Booking {
   attendeeName String
   attendeeEmail String
   total       Decimal       @db.Decimal(10, 2)
-  currency    String        @default("GBP")
+  currency    String        @default("INR")
+  phone       String
+  paymentReference String
+  ticketToken String        @unique @default(cuid())
   status      BookingStatus @default(PENDING)
   bookedAt    DateTime      @default(now())
+  verifiedAt  DateTime?
+  emailSentAt DateTime?
   items       BookingItem[]
+  attendance  Attendance?
 
   @@index([eventId, status])
   @@index([attendeeEmail])
+}
+
+model Attendance {
+  id        String   @id @default(cuid())
+  bookingId String   @unique
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  scannedAt DateTime @default(now())
+  scannedBy String?
 }
 
 model BookingItem {

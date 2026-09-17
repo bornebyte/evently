@@ -5,7 +5,7 @@ export function SiteFooter() {
   return (
     <footer className="bg-[#202321] px-5 pb-8 pt-16 text-white lg:px-8">
       <div className="mx-auto max-w-[1280px]">
-        <div className="grid gap-12 border-b border-white/10 pb-14 md:grid-cols-[1.5fr_1fr_1fr_1.4fr]">
+        <div className="grid gap-12 border-b border-white/10 pb-14 md:grid-cols-[1.5fr_1fr_1.4fr]">
           <div>
             <Link className="flex items-center gap-2.5" href="/">
               <span className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#f16d55] text-[22px] font-bold leading-none text-[#202321]">e</span>
@@ -19,10 +19,6 @@ export function SiteFooter() {
           <div>
             <p className="mb-5 text-[11px] font-bold uppercase tracking-[0.16em] text-white/40">Explore</p>
             <div className="flex flex-col items-start gap-3 text-[13px] text-white/70"><Link className="hover:text-white" href="/events">All events</Link><Link className="hover:text-white" href="/#categories">Categories</Link><Link className="hover:text-white" href="/tickets">My tickets</Link></div>
-          </div>
-          <div>
-            <p className="mb-5 text-[11px] font-bold uppercase tracking-[0.16em] text-white/40">For organizers</p>
-            <div className="flex flex-col items-start gap-3 text-[13px] text-white/70"><Link className="hover:text-white" href="/admin/events/new">Create an event</Link><Link className="hover:text-white" href="/admin/dashboard">Organizer dashboard</Link><a className="hover:text-white" href="mailto:hello@evently.co">Support</a></div>
           </div>
           <div>
             <p className="mb-5 text-[11px] font-bold uppercase tracking-[0.16em] text-white/40">Stay in the know</p>

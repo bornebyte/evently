@@ -7,6 +7,7 @@ function Icon({ size = 20, className = "", strokeWidth = 1.8, children }: IconPr
 }
 
 export function ArrowUpRight(props: IconProps) { return <Icon {...props}><path d="M7 17 17 7" /><path d="M7 7h10v10" /></Icon>; }
+export function ArrowDownRight(props: IconProps) { return <Icon {...props}><path d="m7 7 10 10" /><path d="M17 7v10H7" /></Icon>; }
 export function ArrowRight(props: IconProps) { return <Icon {...props}><path d="M4 12h16" /><path d="m13 5 7 7-7 7" /></Icon>; }
 export function ArrowLeft(props: IconProps) { return <Icon {...props}><path d="M20 12H4" /><path d="m11 19-7-7 7-7" /></Icon>; }
 export function Search(props: IconProps) { return <Icon {...props}><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></Icon>; }
@@ -46,3 +47,7 @@ export function Filter(props: IconProps) { return <Icon {...props}><path d="M4 6
 export function Minus(props: IconProps) { return <Icon {...props}><path d="M5 12h14" /></Icon>; }
 export function Instagram(props: IconProps) { return <Icon {...props}><rect height="16" rx="4" width="16" x="4" y="4" /><circle cx="12" cy="12" r="3.5" /><path d="M17.5 6.5h.01" /></Icon>; }
 export function Linkedin(props: IconProps) { return <Icon {...props}><path d="M7 9v8M7 6v.01M11 17v-4a4 4 0 0 1 8 0v4M11 12a3 3 0 0 1 3-3" /></Icon>; }
+export function LogOut(props: IconProps) { return <Icon {...props}><path d="M10 17l5-5-5-5M15 12H3M21 19V5a2 2 0 0 0-2-2h-6" /></Icon>; }
+export function ScanLine(props: IconProps) { return <Icon {...props}><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10M12 7v10" /></Icon>; }
+export function LockKeyhole(props: IconProps) { return <Icon {...props}><rect height="9" rx="2" width="14" x="5" y="10" /><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2" /></Icon>; }
+export function UserRound(props: IconProps) { return <Icon {...props}><circle cx="12" cy="8" r="3.5" /><path d="M4.5 20a7.5 7.5 0 0 1 15 0" /></Icon>; }

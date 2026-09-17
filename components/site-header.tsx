@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowUpRight, Menu, Search, Ticket, X } from "@/components/icons";
+import { Menu, Search, Ticket, X } from "@/components/icons";
 
 export function SiteHeader({ dark = false }: { dark?: boolean }) {
   const [open, setOpen] = useState(false);
@@ -34,9 +34,6 @@ export function SiteHeader({ dark = false }: { dark?: boolean }) {
             <Ticket size={16} />
             My tickets
           </Link>
-          <Link className="flex h-10 items-center gap-2 rounded-full bg-[#242725] px-4 text-[13px] font-medium text-white hover:bg-[#f16d55] hover:text-[#242725]" href="/admin/dashboard">
-            List an event <ArrowUpRight size={15} />
-          </Link>
         </div>
 
         <button aria-label={open ? "Close menu" : "Open menu"} className={`rounded-full p-2 sm:hidden ${dark ? "hover:bg-white/10" : "hover:bg-black/5"}`} onClick={() => setOpen(!open)} type="button">
@@ -50,7 +47,6 @@ export function SiteHeader({ dark = false }: { dark?: boolean }) {
             <Link className="rounded-xl px-4 py-3 hover:bg-black/5" href="/events" onClick={() => setOpen(false)}>Discover events</Link>
             <Link className="rounded-xl px-4 py-3 hover:bg-black/5" href="/#categories" onClick={() => setOpen(false)}>Categories</Link>
             <Link className="rounded-xl px-4 py-3 hover:bg-black/5" href="/tickets" onClick={() => setOpen(false)}>My tickets</Link>
-            <Link className="mt-1 flex items-center justify-between rounded-xl bg-[#f16d55] px-4 py-3 font-medium" href="/admin/dashboard" onClick={() => setOpen(false)}>List an event <ArrowUpRight size={16} /></Link>
           </nav>
         </div>
       )}
