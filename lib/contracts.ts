@@ -30,6 +30,7 @@ export type PublicEvent = {
   postalCode: string | null;
   latitude: number | null;
   longitude: number | null;
+  mapEmbedUrl: string | null;
   featured: boolean;
   organizer: {
     name: string;

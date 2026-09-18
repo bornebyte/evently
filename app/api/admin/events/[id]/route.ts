@@ -26,6 +26,7 @@ const eventDetailSelect = {
   postalCode: true,
   latitude: true,
   longitude: true,
+  mapEmbedUrl: true,
   status: true,
   featured: true,
   organizer: { select: { name: true, description: true, email: true, phone: true, website: true } },
@@ -116,7 +117,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
       return transaction.event.update({
         where: { id },
-        data: { slug: input.slug, title: input.title, shortDescription: input.shortDescription, description: input.description, category: input.category, tags: input.tags, coverImage: input.coverImage, galleryImages: input.galleryImages, startAt: input.startAt, endAt: input.endAt, timezone: input.timezone, venueName: input.venueName, address: input.address, city: input.city, state: input.state, country: input.country, postalCode: input.postalCode, latitude: input.latitude, longitude: input.longitude, featured: input.featured, status: input.status, organizerId },
+        data: { slug: input.slug, title: input.title, shortDescription: input.shortDescription, description: input.description, category: input.category, tags: input.tags, coverImage: input.coverImage, galleryImages: input.galleryImages, startAt: input.startAt, endAt: input.endAt, timezone: input.timezone, venueName: input.venueName, address: input.address, city: input.city, state: input.state, country: input.country, postalCode: input.postalCode, latitude: input.latitude, longitude: input.longitude, mapEmbedUrl: input.mapEmbedUrl, featured: input.featured, status: input.status, organizerId },
         select: { id: true, slug: true, status: true },
       });
     });

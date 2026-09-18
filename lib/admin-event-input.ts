@@ -37,6 +37,7 @@ export type NormalizedEventInput = {
   postalCode: string | null;
   latitude: number | null;
   longitude: number | null;
+  mapEmbedUrl: string | null;
   organizerName: string;
   organizerDescription: string | null;
   organizerEmail: string;
@@ -102,6 +103,25 @@ function optionalCoordinate(body: Record<string, unknown>, key: "latitude" | "lo
   return numberValue(value, key, { min: key === "latitude" ? -90 : -180, max: key === "latitude" ? 90 : 180 });
 }
 
+function optionalMapEmbedUrl(body: Record<string, unknown>) {
+  const value = optionalString(body, "mapEmbedUrl");
+  if (!value) return null;
+  const iframeSource = value.match(/\bsrc\s*=\s*["']([^"']+)["']/i)?.[1];
+  const rawUrl = (iframeSource ?? value).replaceAll("&amp;", "&");
+  let url: URL;
+  try {
+    url = new URL(rawUrl);
+  } catch {
+    throw new EventInputError("Paste the Google Maps embed URL or the complete iframe code from Google Maps.");
+  }
+  const hostname = url.hostname.toLowerCase();
+  if (url.protocol !== "https:" || !(hostname === "google.com" || hostname.endsWith(".google.com")) || !url.pathname.startsWith("/maps/")) {
+    if (hostname === "maps.app.goo.gl") throw new EventInputError("That maps.app.goo.gl link is a share link. In Google Maps choose Share → Embed a map, then paste the complete iframe code here.");
+    throw new EventInputError("Use the Google Maps embed URL or complete iframe code from Share → Embed a map.");
+  }
+  return url.toString();
+}
+
 function normalizeTicket(value: unknown, index: number): NormalizedTicketInput {
   const ticket = objectValue(value);
   const id = typeof ticket.id === "string" && ticket.id.trim() ? ticket.id.trim() : undefined;
@@ -153,6 +173,7 @@ export function normalizeEventInput(value: unknown): NormalizedEventInput {
     postalCode: optionalString(body, "postalCode"),
     latitude: optionalCoordinate(body, "latitude"),
     longitude: optionalCoordinate(body, "longitude"),
+    mapEmbedUrl: optionalMapEmbedUrl(body),
     organizerName: requiredString(body, "organizerName", "organizer name"),
     organizerDescription: optionalString(body, "organizerDescription"),
     organizerEmail: requiredString(body, "organizerEmail", "organizer email").toLowerCase(),

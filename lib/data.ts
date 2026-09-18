@@ -24,6 +24,7 @@ const publicEventSelect = {
   postalCode: true,
   latitude: true,
   longitude: true,
+  mapEmbedUrl: true,
   featured: true,
   organizer: {
     select: { name: true, description: true, email: true, phone: true, website: true },
@@ -81,6 +82,7 @@ function toPublicEvent(event: PublicEventRow): PublicEvent {
     postalCode: event.postalCode,
     latitude: event.latitude,
     longitude: event.longitude,
+    mapEmbedUrl: event.mapEmbedUrl,
     featured: event.featured,
     organizer: event.organizer,
     ticketTiers: event.ticketTypes.map((ticket) => ({

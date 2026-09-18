@@ -86,6 +86,7 @@ export async function POST(request: Request) {
           postalCode: input.postalCode,
           latitude: input.latitude,
           longitude: input.longitude,
+          mapEmbedUrl: input.mapEmbedUrl,
           featured: input.featured,
           status: input.status,
           organizerId: organizer.id,

@@ -87,6 +87,7 @@ model Event {
   postalCode    String?
   latitude      Float?
   longitude     Float?
+  mapEmbedUrl   String?
   status        EventStatus  @default(DRAFT)
   featured      Boolean      @default(false)
   organizerId   String

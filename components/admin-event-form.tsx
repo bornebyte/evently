@@ -46,6 +46,7 @@ type EventForm = {
   postalCode: string;
   latitude: string;
   longitude: string;
+  mapEmbedUrl: string;
   organizerName: string;
   organizerDescription: string;
   organizerEmail: string;
@@ -76,6 +77,7 @@ type AdminEventDetail = {
   postalCode: string | null;
   latitude: number | null;
   longitude: number | null;
+  mapEmbedUrl: string | null;
   status: EventStatus;
   featured: boolean;
   organizer: { name: string; description: string | null; email: string; phone: string | null; website: string | null };
@@ -95,7 +97,7 @@ const ticketStatusOptions: { value: TicketStatus; label: string }[] = [
 ];
 
 const emptyTicket = (): TicketForm => ({ name: "", description: "", price: "", quantity: "", minPerOrder: "1", maxPerOrder: "8", salesStart: "", salesEnd: "", status: "ACTIVE" });
-const emptyForm: EventForm = { title: "", slug: "", shortDescription: "", description: "", category: "", tags: "", coverImage: "", galleryImages: "", startAt: "", endAt: "", timezone: "Asia/Kolkata", venueName: "", address: "", city: "", state: "", country: "India", postalCode: "", latitude: "", longitude: "", organizerName: "", organizerDescription: "", organizerEmail: "", organizerPhone: "", organizerWebsite: "", status: "PUBLISHED", featured: false };
+const emptyForm: EventForm = { title: "", slug: "", shortDescription: "", description: "", category: "", tags: "", coverImage: "", galleryImages: "", startAt: "", endAt: "", timezone: "Asia/Kolkata", venueName: "", address: "", city: "", state: "", country: "India", postalCode: "", latitude: "", longitude: "", mapEmbedUrl: "", organizerName: "", organizerDescription: "", organizerEmail: "", organizerPhone: "", organizerWebsite: "", status: "PUBLISHED", featured: false };
 
 function dateTimeLocal(value: string | null | undefined) {
   if (!value) return "";
@@ -127,6 +129,7 @@ function formFromEvent(event: AdminEventDetail): { form: EventForm; tickets: Tic
       postalCode: event.postalCode ?? "",
       latitude: event.latitude === null ? "" : String(event.latitude),
       longitude: event.longitude === null ? "" : String(event.longitude),
+      mapEmbedUrl: event.mapEmbedUrl ?? "",
       organizerName: event.organizer.name,
       organizerDescription: event.organizer.description ?? "",
       organizerEmail: event.organizer.email,
@@ -290,6 +293,10 @@ export default function AdminEventForm({ mode, eventId }: { mode: "create" | "ed
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <Field label="Latitude" placeholder="Optional map latitude" value={form.latitude} onChange={(value) => update("latitude", value)} />
             <Field label="Longitude" placeholder="Optional map longitude" value={form.longitude} onChange={(value) => update("longitude", value)} />
+          </div>
+          <div className="mt-4">
+            <Field label="Google Maps embed code or URL" placeholder="Paste the iframe code or embed URL" textarea value={form.mapEmbedUrl} onChange={(value) => update("mapEmbedUrl", value)} />
+            <p className="mt-2 text-[10px] leading-4 text-[#89938b]">Choose Share → Embed a map in Google Maps, then paste the complete iframe code or its src URL. Short maps.app.goo.gl links cannot be embedded.</p>
           </div>
         </FormSection>
 
