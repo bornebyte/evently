@@ -41,9 +41,6 @@ export type PublicEvent = {
   ticketTiers: PublicTicketTier[];
   price: number | null;
   priceLabel: string | null;
-  attendees: string;
-  capacity: number;
-  sold: number;
   date: string;
   dateLong: string;
   time: string;

@@ -30,9 +30,8 @@ export function EventCard({ event, featured = false, onSave, saved = false }: Ev
         </div>
         <h3 className="max-w-[280px] text-[20px] font-semibold leading-[1.1] tracking-[-0.04em] text-[#242725] transition-colors group-hover:text-[#d95742]">{event.title}</h3>
         <p className="mt-2 line-clamp-2 text-[13px] leading-5 text-[#747c76]">{event.shortDescription}</p>
-        <div className="mt-5 flex items-center justify-between border-t border-[#edf0eb] pt-4">
+        <div className="mt-5 flex items-center border-t border-[#edf0eb] pt-4">
           <span className="text-[13px] font-semibold text-[#242725]">{event.priceLabel ?? "Tickets to be announced"}</span>
-          <span className="text-[12px] font-medium text-[#7c847e]">{event.attendees}</span>
         </div>
       </Link>
     </article>

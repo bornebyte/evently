@@ -1,7 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { formatCompactNumber } from "@/lib/format";
 import type { PublicCategory, PublicEvent } from "@/lib/contracts";
 
 const publicEventSelect = {
@@ -56,9 +55,6 @@ function formatDate(date: Date, timeZone: string, options: Intl.DateTimeFormatOp
 }
 
 function toPublicEvent(event: PublicEventRow): PublicEvent {
-  const capacity = event.ticketTypes.reduce((sum, ticket) => sum + ticket.totalQuantity, 0);
-  const available = event.ticketTypes.reduce((sum, ticket) => sum + ticket.availableQuantity, 0);
-  const sold = Math.max(0, capacity - available);
   const lowestPrice = event.ticketTypes[0] ? Number(event.ticketTypes[0].price) : null;
   const dateOptions = { day: "numeric", month: "short", year: "numeric" } satisfies Intl.DateTimeFormatOptions;
   const dateLongOptions = { weekday: "long", day: "numeric", month: "long", year: "numeric" } satisfies Intl.DateTimeFormatOptions;
@@ -99,9 +95,6 @@ function toPublicEvent(event: PublicEventRow): PublicEvent {
     })),
     price: lowestPrice,
     priceLabel: lowestPrice === null ? null : `From ${new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(lowestPrice)}`,
-    attendees: `${formatCompactNumber(sold)} going`,
-    capacity,
-    sold,
     date: formatDate(event.startAt, event.timezone, dateOptions),
     dateLong: formatDate(event.startAt, event.timezone, dateLongOptions),
     time: `${formatDate(event.startAt, event.timezone, timeOptions)} – ${formatDate(event.endAt, event.timezone, timeOptions)}`,
